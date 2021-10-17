@@ -21,9 +21,7 @@ typedef struct {
 
 	Client* clients ; // stores list of client sockets
 	
-	size_t client_count ; // stores current count of clients
-	
-	size_t size_ ; // stores current max size of array 
+	size_t size ; // stores current max size of array 
 
 	pthread_mutex_t mutex ; // mutex so each execution branch can safely read / add to list
 	                               // for example, when host connection is established, their IP is taken and stored in razan
@@ -32,12 +30,16 @@ typedef struct {
 
 void client_store_init(ClientStore*) ;
 
-void add_client(const int, const char*, ClientStore*) ;
+Client* find_client_gap(ClientStore*) ;
+
+Client* add_client(const int, const char*, ClientStore*) ;
 
 const char* get_client_address(const int) ;
 
-void client_store_fini(ClientStore*) ;
+void close_client(Client*) ;
 
 void* client_connection(void*) ;
+
+void client_store_fini(ClientStore*) ;
 
 #endif // CLIENT_MANAGER_H

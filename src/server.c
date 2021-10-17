@@ -18,6 +18,7 @@
 
 int main(void)
 {
+	fprintf(stdout, "LOG: %s\n", "Launching razan server") ;
 	/* Initialisation part */
 	// set up socket, attach to location, set up as initial communication line
 
@@ -64,6 +65,7 @@ int main(void)
 
 	/* Client hosting part */
 	// uses multithreading pthreads, because I cba to make sure I use c11
+	fprintf(stdout, "LOG: %s\n", "razan server online and awaiting clients") ;
 	
 	ClientStore client_store ; // now that server is basically set up, create functionality to store client details
 	client_store_init(&client_store) ;
@@ -72,7 +74,7 @@ int main(void)
 	#define MAX_THREADS 2
 	pthread_t thread_ids[MAX_THREADS] ;
 	size_t i = 0 ;
-	for( ; i < MAX_THREADS ; ++i) // people that connect @ once == max threads
+	while(1) // people that connect @ once == max threads
 	{
 		int new_socket = accept(server_fd, (struct sockaddr*)&address, (socklen_t*)&addrlen) ;
 		if(new_socket == -1)
@@ -81,17 +83,19 @@ int main(void)
 			break ;
 		}
 
-		add_client(new_socket, get_client_address(new_socket), &client_store) ;
-		Client* client = client_store.clients + (client_store.client_count-1) ;
+		Client* client = add_client(new_socket, get_client_address(new_socket), &client_store) ;
 		pthread_create(thread_ids+i, NULL, &client_connection, (void*)client) ;
 	}
 	
-	for(size_t j = 0 ; j <= i ; ++j)
-	{
-		pthread_join(thread_ids[j], NULL) ; // do not allow server to die till last client disconnects
-	}
+	//for(size_t j = 0 ; j <= i ; ++j) // find a way to keep track of which threads exit
+	//{
+	//	pthread_join(thread_ids[i], NULL) ; // do not allow server to die till last client disconnects
+	//}
 
 	// E(nd) O(f) P(rogram)
+	fprintf(stdout, "LOG: %s\n", "Disconnecting clients from server") ;
+	client_store_fini(&client_store) ; // close all client sockets, free memory
+	fprintf(stdout, "LOG: %s\n", "Closing server, goodbye") ;
 	close(server_fd) ;
 	return 0 ;
 }
