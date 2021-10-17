@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <pthread.h> // (p)threads
+#include <signal.h>
 
 #define PORT 4242
 
@@ -15,6 +16,10 @@
 /** @brief Source & Implementation of multithreaded server for razan terminal messaging
   * @author Salih Ahmed
   * @date 16 Oct 2021 **/
+
+/** @brief main entry function for server
+  * @return int showing execution status (non-zero = error, zero = success) **/
+int main(void) ;
 
 int main(void)
 {
@@ -92,7 +97,8 @@ int main(void)
 	//	pthread_join(thread_ids[i], NULL) ; // do not allow server to die till last client disconnects
 	//}
 
-	// E(nd) O(f) P(rogram)
+	// E(nd) O(f) P(rogram) (need to find a way to force program to reach this point upon SIGINT w/o globals
+	// not all *nix operating systems have a nice resource cleanuo like linux
 	fprintf(stdout, "LOG: %s\n", "Disconnecting clients from server") ;
 	client_store_fini(&client_store) ; // close all client sockets, free memory
 	fprintf(stdout, "LOG: %s\n", "Closing server, goodbye") ;

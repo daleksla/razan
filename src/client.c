@@ -14,6 +14,10 @@
 
 int main(void)
 {
+	fprintf(stdout, "LOG: %s\n", "Launching razan client") ;
+	/* Initialisation part */
+	// set up socket, attach to location, attempt connection
+	
 	// Creating socket file descriptor - communication domain IPv4, TCP communication, Protocol value for Internet Protocol (IP)
 	int sock = socket(AF_INET, SOCK_STREAM, 0) ;
 	if(sock == -1)
@@ -39,7 +43,10 @@ int main(void)
 		fprintf(stderr, "Error: %s\n", "Issue connecting to server socket") ;
 		return -3 ;
 	}
-	
+
+	/* Communication part */
+	fprintf(stdout, "LOG: %s\n", "razan client connected to server") ;
+
 	while(1)
  	{
 		char buffer[1024] = {'\0'} ; // declare&initialise buffer

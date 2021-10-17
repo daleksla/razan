@@ -45,6 +45,7 @@ Client* add_client(const int sk, const char* ad, ClientStore* cs)
 
 Client* find_client_gap(ClientStore* cs)
 {
+	pthread_mutex_lock(&cs->mutex) ;
 	for(size_t i = 0 ; i < cs->size ; ++i)
 	{
 		Client* cl = cs->clients+i ;
@@ -52,7 +53,8 @@ Client* find_client_gap(ClientStore* cs)
 		{
 			return cl ;
 		}
-	}	
+	}
+	pthread_mutex_unlock(&cs->mutex) ;
 	return NULL ;
 }
 
@@ -81,7 +83,7 @@ void* client_connection(void* v_client)
  	{
 		char buffer[1024] = {'\0'} ; // declare&initialise buffer
     		if(!read(client->socket, buffer, 1023)) break ;
-    		fprintf(stdout, "LOG: message from socket %s via socket %d: %s\n", client->address, client->socket, buffer) ;
+    		fprintf(stdout, "LOG: message from address %s, via socket %d: %s\n", client->address, client->socket, buffer) ;
     	}
     	close_client(client) ;
     	return v_client ;
@@ -91,9 +93,10 @@ void client_store_fini(ClientStore* cs)
 {
 	for(size_t i = 0 ; i < cs->size ; ++i)
 	{
-		if(((Client*)(cs+i))->socket == -1)
+		Client* cl = cs->clients+i ;
+		if(cl->socket == -1)
 		{
-			close_client(((Client*)(cs+i))) ;
+			close_client(cl) ;
 		}
 	}
 	free(cs->clients) ; // list of max 256 char pointers
