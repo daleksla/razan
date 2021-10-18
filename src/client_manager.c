@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
+#include "crypt.h"
 #include "client_manager.h" // functionality to manage client information
 
 /** @brief Implementation of functionality related to storing client details & their communications
@@ -76,8 +77,23 @@ void* client_connection(void* v_client)
 {
 	Client* client = (Client*)v_client ;
 	fprintf(stdout, "LOG: Dedicated connection for client on %s, via socket %d, is online\n", client->address, client->socket) ;
-	// add client to list (useless for now, since we're just doing sever-client)
-	// call diffie-hellman exchange to set up symmetric keys
+	
+	const two_keys public_keys = generate_public_keys() ;
+	send(client->socket, &public_keys, sizeof(two_keys), 0) ; // send pointer of public keys
+	fprintf(stdout, "prime_key %llu\n", public_keys.key_a) ;
+	fprintf(stdout, "my_prime_root %llu\n", public_keys.key_b) ;
+	
+	const two_keys secret_keys = generate_secret_keys(&public_keys) ;
+	send(client->socket, &(secret_keys.key_b), sizeof(long long int), 0) ; // send mashed key to other side
+	fprintf(stdout, "my_mashed %llu\n", secret_keys.key_b) ;
+		
+	long long int her_mashed_key ;
+	read(client->socket, &her_mashed_key, sizeof(long long int)) ; // read in other clients mashed key
+	fprintf(stdout, "client_mashed %llu\n", her_mashed_key) ;
+		
+	const long long int key = generate_symmetric_key(her_mashed_key, secret_keys.key_a, public_keys.key_a) ; // actual key
+	fprintf(stdout, "SymKey: %lld\n", key) ;	
+	
 	// begin messaging
 	while(1)
  	{

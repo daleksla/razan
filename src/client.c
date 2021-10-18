@@ -46,10 +46,28 @@ int main(void)
 
 	/* Communication part */
 	fprintf(stdout, "LOG: %s\n", "razan client connected to server") ;
+ 	char buffer[1024] = {'\0'} ; // declare&initialise buffer
+ 
+ 	// determine symmetric key
+   	read(sock, buffer, sizeof(two_keys)) ;
+ 	const two_keys public_keys = {((two_keys*)(buffer))->key_a, ((two_keys*)(buffer))->key_b} ;
+	fprintf(stdout, "prime_key %llu\n", public_keys.key_a) ;
+	fprintf(stdout, "my_prime_root %llu\n", public_keys.key_b) ;
+	
+  	const two_keys secret_keys = generate_secret_keys(&public_keys) ;
+	send(sock, &(secret_keys.key_b), sizeof(long long int), 0) ; // send mashed key to other side
+	fprintf(stdout, "my_mashed %llu\n", secret_keys.key_b) ;
+	
+	long long int her_mashed_key ;
+	read(sock, &her_mashed_key, sizeof(long long int)) ; // read in other clients mashed key
+	fprintf(stdout, "client_mashed %llu\n", her_mashed_key) ;
 
+	const long long int key = generate_symmetric_key(her_mashed_key, secret_keys.key_a, public_keys.key_a) ; // actual key
+	fprintf(stdout, "SymKey: %lld\n", key) ;	
+	
 	while(1)
  	{
-		char buffer[1024] = {'\0'} ; // declare&initialise buffer
+ 		memset(buffer, '\0', 1024) ; // declare&initialise buffer
 		fprintf(stdout, "%s", "Input < ") ; fflush(stdout) ; // inline input prompt (&manual flush)
  		read(1, buffer, 1023) ; // read syscall to get user input from stdin
  		// encrypt input
