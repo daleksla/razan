@@ -11,7 +11,6 @@
 #define PORT 4242
 
 #include "client_manager.h" // functionality to manage clients
-#include "crypt.h" // encryption related functionality
 
 /** @brief Source & Implementation of multithreaded server for razan terminal messaging
   * @author Salih Ahmed

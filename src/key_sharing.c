@@ -2,10 +2,9 @@
 #include <time.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/wait.h>
 #include <stdio.h>
 
-#include "crypt.h"
+#include "key_sharing.h"
 
 /** @brief Implementations of encryption functionalities (&helpful local inlines) for razan terminal messaging
   * @author Salih Ahmed
@@ -36,7 +35,9 @@ two_keys generate_public_keys(void) // program run by server, just do it inline 
 
 two_keys generate_secret_keys(const two_keys* public_keys) // ran by each client, takes public keys
 {
-	const long long int private_key = 9 ;	
+	int f ;
+	srand(f) ;
+	const long long int private_key = rand() ;	
 	const long long int mashed_key = power(public_keys->key_b, private_key, public_keys->key_a) ; // mash up private key to create a secret key
 
 	two_keys tmp ;

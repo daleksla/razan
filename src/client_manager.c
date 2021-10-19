@@ -8,8 +8,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "crypt.h"
+#include "key_sharing.h"
 #include "client_manager.h" // functionality to manage client information
+#include "aes.h"
 
 /** @brief Implementation of functionality related to storing client details & their communications
   * @author Salih Ahmed
@@ -80,26 +81,25 @@ void* client_connection(void* v_client)
 	
 	const two_keys public_keys = generate_public_keys() ;
 	send(client->socket, &public_keys, sizeof(two_keys), 0) ; // send pointer of public keys
-	fprintf(stdout, "prime_key %llu\n", public_keys.key_a) ;
-	fprintf(stdout, "my_prime_root %llu\n", public_keys.key_b) ;
 	
 	const two_keys secret_keys = generate_secret_keys(&public_keys) ;
 	send(client->socket, &(secret_keys.key_b), sizeof(long long int), 0) ; // send mashed key to other side
-	fprintf(stdout, "my_mashed %llu\n", secret_keys.key_b) ;
 		
 	long long int her_mashed_key ;
 	read(client->socket, &her_mashed_key, sizeof(long long int)) ; // read in other clients mashed key
-	fprintf(stdout, "client_mashed %llu\n", her_mashed_key) ;
 		
 	const long long int key = generate_symmetric_key(her_mashed_key, secret_keys.key_a, public_keys.key_a) ; // actual key
-	fprintf(stdout, "SymKey: %lld\n", key) ;	
+	
+	struct AES_ctx ctx ;
+	AES_init_ctx(&ctx, &key) ;
 	
 	// begin messaging
 	while(1)
  	{
 		char buffer[1024] = {'\0'} ; // declare&initialise buffer
     		if(!read(client->socket, buffer, 1023)) break ;
-    		fprintf(stdout, "LOG: message from address %s, via socket %d: %s\n", client->address, client->socket, buffer) ;
+		AES_ECB_decrypt(&ctx, buffer) ;
+    		fprintf(stdout, "LOG: message from address %s, via socket %d: %s\n", "localhost", client->socket, buffer) ;
     	}
     	close_client(client) ;
     	return v_client ;
