@@ -93,6 +93,8 @@ void* client_connection(void* v_client)
 	struct AES_ctx ctx ;
 	AES_init_ctx(&ctx, &key) ;
 	
+	// validate input
+	
 	// begin messaging
 	while(1)
  	{
