@@ -71,7 +71,7 @@ int main(void)
 	// uses multithreading pthreads, because I cba to make sure I use c11
 	fprintf(stdout, "LOG: %s\n", "razan server online and awaiting clients") ;
 	
-	ClientStore client_store ; // now that server is basically set up, create functionality to store client details
+	struct ClientStore client_store ; // now that server is basically set up, create functionality to store client details
 	client_store_init(&client_store) ;
 	
 	// now create dedicated server-client socket, connecting to user who reached passive socket first
@@ -87,7 +87,7 @@ int main(void)
 			break ;
 		}
 
-		Client* client = add_client(new_socket, get_client_address(new_socket), &client_store) ;
+		struct Client* client = add_client(new_socket, get_client_address(new_socket), &client_store) ;
 		pthread_create(thread_ids+i, NULL, &client_connection, (void*)client) ;
 	}
 	

@@ -7,19 +7,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdint.h>
 
 #include "key_sharing.h"
 #include "client_manager.h" // functionality to manage client information
 #include "aes.h"
 
-/** @brief Implementation of functionality related to storing client details & their communications
-  * @author Salih Ahmed
-  * @date 16 Oct 2021 **/
+/** @brief Implementation of functionality related to storing client details & their communications **/
 
-void client_store_init(ClientStore* cs)
+void client_store_init(struct ClientStore* cs)
 {
 	cs->size = 3 ;
-	cs->clients = malloc(sizeof(Client) * cs->size) ; // list of max 256 char pointers
+	cs->clients = malloc(sizeof(struct Client) * cs->size) ; // list of max 256 char pointers
 	assert(cs->clients) ;
 	for(size_t i = 0 ; i < cs->size ; ++i)
 	{
@@ -28,10 +27,10 @@ void client_store_init(ClientStore* cs)
 	}
 }
 
-Client* add_client(const int sk, const char* ad, ClientStore* cs)
+struct Client* add_client(const int sk, const char* ad, struct ClientStore* cs)
 {
 	pthread_mutex_lock(&cs->mutex) ;
-	Client* tmp = find_client_gap(cs) ;
+	struct Client* tmp = find_client_gap(cs) ;
 	if(!tmp)
 	{
 		cs->size *= 2 ;
@@ -45,12 +44,12 @@ Client* add_client(const int sk, const char* ad, ClientStore* cs)
 	return tmp ;
 }
 
-Client* find_client_gap(ClientStore* cs)
+struct Client* find_client_gap(struct ClientStore* cs)
 {
 	pthread_mutex_lock(&cs->mutex) ;
 	for(size_t i = 0 ; i < cs->size ; ++i)
 	{
-		Client* cl = cs->clients+i ;
+		struct Client* cl = cs->clients+i ;
 		if(cl->socket == -1)
 		{
 			return cl ;
@@ -60,7 +59,7 @@ Client* find_client_gap(ClientStore* cs)
 	return NULL ;
 }
 
-void close_client(Client* cl)
+void close_client(struct Client* cl)
 {
 	close(cl->socket) ;
 	cl->socket = -1 ;
@@ -76,22 +75,21 @@ const char* get_client_address(const int socket)
 
 void* client_connection(void* v_client)
 {
-	Client* client = (Client*)v_client ;
+	struct Client* client = (struct Client*)v_client ;
 	fprintf(stdout, "LOG: Dedicated connection for client on %s, via socket %d, is online\n", client->address, client->socket) ;
+
+	const struct two_keys public_keys = generate_public_keys() ;
+	send(client->socket, &public_keys, sizeof(struct two_keys), 0) ; // send pointer of public keys
 	
-	const two_keys public_keys = generate_public_keys() ;
-	send(client->socket, &public_keys, sizeof(two_keys), 0) ; // send pointer of public keys
-	
-	const two_keys secret_keys = generate_secret_keys(&public_keys) ;
-	send(client->socket, &(secret_keys.key_b), sizeof(long long int), 0) ; // send mashed key to other side
+	const struct two_keys secret_keys = generate_secret_keys(&public_keys) ;
+	send(client->socket, &(secret_keys.key_b), sizeof(unsigned long int), 0) ; // send mashed key to other side		
+	unsigned long int her_mashed_key ;
+	read(client->socket, &her_mashed_key, sizeof(unsigned long int)) ; // read in other clients mashed key
 		
-	long long int her_mashed_key ;
-	read(client->socket, &her_mashed_key, sizeof(long long int)) ; // read in other clients mashed key
-		
-	const long long int key = generate_symmetric_key(her_mashed_key, secret_keys.key_a, public_keys.key_a) ; // actual key
-	
+	const unsigned long int KEY = generate_symmetric_key(her_mashed_key, secret_keys.key_a, public_keys.key_a) ; // actual key
+
 	struct AES_ctx ctx ;
-	AES_init_ctx(&ctx, &key) ;
+	AES_init_ctx(&ctx, (const uint8_t*)&KEY) ;
 	
 	// validate input
 	
@@ -99,19 +97,23 @@ void* client_connection(void* v_client)
 	while(1)
  	{
 		char buffer[1024] = {'\0'} ; // declare&initialise buffer
-    		if(!read(client->socket, buffer, 1023)) break ;
-		AES_ECB_decrypt(&ctx, buffer) ;
-    		fprintf(stdout, "LOG: message from address %s, via socket %d: %s\n", "localhost", client->socket, buffer) ;
-    	}
-    	close_client(client) ;
-    	return v_client ;
+    	if(!read(client->socket, buffer, 1023)) break ;
+		AES_ECB_decrypt(&ctx, (uint8_t*)buffer) ;
+    	fprintf(stdout, "LOG: message from address %s, via socket %d: %s\n", "localhost", client->socket, buffer) ;
+		AES_ECB_encrypt(&ctx, (uint8_t*)buffer) ;
+    	if(send(client->socket, buffer, strlen(buffer), 0) != strlen(buffer)) break ;
+    }
+    
+	fprintf(stdout, "LOG: Freeing client on %s, socket %d\n", client->address, client->socket) ;
+    close_client(client) ;
+    return v_client ;
 }
 
-void client_store_fini(ClientStore* cs)
+void client_store_fini(struct ClientStore* cs)
 {
 	for(size_t i = 0 ; i < cs->size ; ++i)
 	{
-		Client* cl = cs->clients+i ;
+		struct Client* cl = cs->clients+i ;
 		if(cl->socket == -1)
 		{
 			close_client(cl) ;
