@@ -1,25 +1,31 @@
 #ifndef CRYPT_H
 #define CRYPT_H
+#pragma once
 
-/** @brief Definitions of encryption functionalities for razan terminal messaging
-  * @author Salih Ahmed
-  * @date 16 Oct 2021 **/
+/** @brief Definitions of encryption functionalities for razan terminal messaging **/
 
-typedef struct {
+struct two_keys {
 
-	long long int key_a ;
+	unsigned long int key_a ;
 	
-	long long int key_b ;
+	unsigned long int key_b ;
 	
-} two_keys ;
+} ;
 
-// ran by server, creates public keys
-two_keys generate_public_keys(void) ;
+/** @brief generate_public_keys - function ran by server to creates public keys (P&G) used in Duffie-Hellman key-sharing implementation
+  * @return struct two_keys - structure containing public keys **/
+struct two_keys generate_public_keys(void) ;
 
-// ran by each client, takes public keys, returns private (to keep) and mashed key (to share)
-two_keys generate_secret_keys(const two_keys*) ;
+/** @brief generate_secret_keys - ran by each client, takes public keys, returns private (to keep) and mashed key (to share)
+  * @param const struct two_keys* - pointer to public keys
+  * @return struct two_keys - pointer containing private-esque keys **/
+struct two_keys generate_secret_keys(const struct two_keys*) ;
 
-// ran by each client, using others secret, their private keys and the prime public to create key for all messages
-long long int generate_symmetric_key(const long long int, const long long int, const long long int) ; 
+/** @brief generate_symmetric_key - ran by each client, using others secret, their private keys and the prime public to create symmetric key for message encryption
+  * @param const unsigned long int- other clients mashed key
+  * @param const unsigned long int - my private key
+  * @param const unsigned long int - prime public key
+  * @return unsigned long int - symmetric key **/
+unsigned long int generate_symmetric_key(const unsigned long int, const unsigned long int, const unsigned long int) ; 
 
 #endif // CRYPT_H

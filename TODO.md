@@ -6,7 +6,6 @@
 
 * tweak so server sends public keys, and all other details are forwarded from one client to another via the socket
 
-* investigate usage on ncurses to split screen in two for client
-> one side shows incoming messages (from other socket), one shows outgoing ones (from user)
+* find out how to read in from ncurses window and store in buffer, and to set a callback (if needed) when user hits enter (carriage return)
 
 * try to translate the c++ random functionality into c
