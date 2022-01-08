@@ -4,10 +4,11 @@ INCLUDED_LIBS = -I include/ -I /usr/include/openssl
 LINK_LIBS_SECURITY_LIB=`locate libcrypto.a` -ldl -lm -pthread
 LINK_LIBS_SERVER_LIB=lib/encryption.o
 LINK_LIBS_CLIENT_LIB=lib/encryption.o -lcurses
-LINK_LIBS_SERVER_BIN=lib/server.o lib/encryption.o lib/client_manager.o -pthread
-LINK_LIBS_CLIENT_BIN=lib/client.o lib/client_chat.o lib/encryption.o -lcurses
+LINK_LIBS_SERVER_BIN=lib/razan_server.o lib/encryption.o lib/server.o -pthread
+LINK_LIBS_CLIENT_BIN=lib/razan_client.o lib/client.o lib/encryption.o -lcurses
 
 all: security_lib server_lib client_lib bin
+.PHONY: all security_lib server_lib client_lib bin
 
 security_lib:
 	cc $(FLAGS) $(INCLUDED_LIBS) -c src/encryption.c $(LINK_LIBS_SECURITY_LIB) -o lib/encryption.o 
