@@ -1,0 +1,9 @@
+[submodule "libraries/tiny-ECDH-c"]
+	path = libraries/tiny-ECDH-c
+	url = git@github.com:kokke/tiny-ECDH-c.git
+[submodule "libraries/tiny-AES-c"]
+	path = libraries/tiny-AES-c
+	url = git@github.com:kokke/tiny-AES-c.git
+[submodule "libraries/libtomcrypt"]
+	path = libraries/libtomcrypt
+	url = git@github.com:libtom/libtomcrypt.git

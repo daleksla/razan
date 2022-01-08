@@ -1,0 +1,25 @@
+.TH razan_server 1 "8 Jan 2022"
+.SH NAME
+razan_server - Server for razan client messaging application
+.SH SYNOPSIS
+razan [ -p --port | -v --verbose | -? --usage --help ]
+.SH DESCRIPTION
+razan_server is the facilitating process for the client messaging application razan. Initialises AES symmetric encryption used to protect the messages between clients and transfer the messages from one client to another, multithreaded to support multiple connections (depending on host computer support).
+.SS Options
+.TP
+-?, --help, --usage
+Displays brief synopsis and the program's parameters 
+.TP
+-p, --port
+Specifies port to connect to (else program default communications over port 4242)
+.SH AUTHOR
+.TP
+Salih Ahmed
+.SH REPORTING BUGS
+.TP
+Please report bugs on the official Github Issues section of the razan repository <https://github.com/daleksla/razan.git>
+.SH COPYRIGHT
+.TP
+Copyright (C) 2021 Salih Ahmed. See LICENSE for details of usage
+.SH "SEE ALSO"
+razan(1)
