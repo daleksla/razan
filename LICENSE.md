@@ -1,7 +1,7 @@
 # razan
 ## LICENSE
 
-`razan` is a basic symmetrically encrypted peer-to-peer messaging service, where communication are facilitated via a local server
+razan is a basic symmetrically encrypted peer-to-peer messaging service.
 Copyright (C) 2021 Salih Ahmed
 
 This library is free software; you can redistribute it and/or
