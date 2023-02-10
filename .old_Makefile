@@ -1,0 +1,46 @@
+COMPILE_FLAGS=-std=c++2a -Wall -Wextra -g -fPIC
+OPTIONS=-DOPENSSL_PIC -DDEFAULT_PORT=4242 -DDEV_MODE -fno-exceptions
+INCLUDES=-I include/ -I /usr/include/openssl
+LINK_LIBS=/usr/local/lib64/libcrypto.a -lm -pthread -lncurses -ldl -lstdc++ -lssl -lcrypto -lz
+OBJECT_FILES=lib/logger.o lib/encryption.o lib/client_management.o lib/client_chat.o
+
+all: io_lib encryption_lib communication_lib razan_server razan_client
+.PHONY: all
+
+clean:
+	@echo "Cleaning bin/ directory"
+	@rm bin/* 2>/dev/null || true
+	@echo "Cleaning lib/ directory"
+	@rm lib/* 2>/dev/null || true
+	@echo "Build cleaned"
+
+rebuild: clean all
+
+io_lib:
+	@echo "Building I/O libraries: src/logger.cc"
+	@cc $(COMPILE_FLAGS) $(OPTIONS) $(INCLUDES) -c src/logger.cc -o lib/logger.o
+
+encryption_lib:
+	@echo "Building encryption functionality: src/encryption.cc"
+	@cc $(COMPILE_FLAGS) $(OPTIONS) $(INCLUDES) -c src/encryption.cc -o lib/encryption.o
+
+communication_lib:
+	@echo "Building communication libraries: src/client_management.cc src/client_chat.cc"
+	@cc $(COMPILE_FLAGS) $(OPTIONS) $(INCLUDES) -c src/client_management.cc -o lib/client_management.o
+	@cc $(COMPILE_FLAGS) $(OPTIONS) $(INCLUDES) -c src/client_chat.cc -o lib/client_chat.o
+
+razan_server: io_lib encryption_lib communication_lib
+	@echo "Building razan_server executable: src/razan_server.cc"
+	@cc $(COMPILE_FLAGS) $(OPTIONS) $(INCLUDES) -c src/razan_server.cc -o lib/razan_server.o
+	@echo "Linking razan_server"
+	@cc $(COMPILE_FLAGS) $(OPTIONS) $(INCLUDES) $(OBJECT_FILES) lib/razan_server.o $(LINK_LIBS) -o bin/razan_server # server, to be run on one machine only
+
+razan_client: io_lib encryption_lib communication_lib
+	@echo "Building razan_client executable: src/razan_client.cc"
+	@cc $(COMPILE_FLAGS) $(OPTIONS) $(INCLUDES) -c src/razan_client.cc -o lib/razan_client.o
+	@echo "Linking razan_client"
+	@cc $(COMPILE_FLAGS) $(OPTIONS) $(INCLUDES) $(OBJECT_FILES) lib/razan_client.o $(LINK_LIBS) -o bin/razan # client application, copy for everyone to use
+
+install: all
+	@echo "Copying contents of bin/ to /usr/bin"
+	@cp /bin/* /usr/bin

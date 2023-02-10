@@ -1,0 +1,8 @@
+/home/salih/code/projects/razan/CMakeFiles/rebuild_cache.dir
+/home/salih/code/projects/razan/CMakeFiles/edit_cache.dir
+/home/salih/code/projects/razan/CMakeFiles/razan_client.dir
+/home/salih/code/projects/razan/CMakeFiles/razan_server.dir
+/home/salih/code/projects/razan/CMakeFiles/razan_client_chat.dir
+/home/salih/code/projects/razan/CMakeFiles/razan_client_management.dir
+/home/salih/code/projects/razan/CMakeFiles/razan_encryption.dir
+/home/salih/code/projects/razan/CMakeFiles/razan_logger.dir

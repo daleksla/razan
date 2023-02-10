@@ -1,10 +1,8 @@
 # razan
 ## README
 
-`razan` is a basic symmetrically encrypted peer-to-peer messaging service.
+razan is a real-time, symmetrically encrypted messaging service, facilitated by a central server.
 
 ***
 
-Credit:
-
-* Razan (niece) for having a name with a Z in it, makes it sound hardcore (would've called it pigeon otherwise)
+See LICENSE for terms of usage.

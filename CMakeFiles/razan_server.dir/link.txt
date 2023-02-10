@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/razan_server.dir/src/razan_server.cc.o  -o bin/razan_server  lib/librazan_client_management.a lib/librazan_encryption.a lib/librazan_logger.a /usr/local/lib64/libcrypto.a -lm -lpthread -lncurses -ldl -lstdc++ -lssl -lcrypto -lz 

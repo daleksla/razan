@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib/librazan_logger.a  CMakeFiles/razan_logger.dir/src/logger.c.o
+/usr/bin/ranlib lib/librazan_logger.a

@@ -1,4 +1,4 @@
-.TH razan 1 "8 Jan 2022"
+.TH razan 6 "8 Jan 2022"
 .SH NAME
 razan - End-user client messaging application
 .SH SYNOPSIS
@@ -20,6 +20,6 @@ Salih Ahmed
 Please report bugs on the official Github Issues section of the razan repository <https://github.com/daleksla/razan.git>
 .SH COPYRIGHT
 .TP
-Copyright (C) 2021 Salih Ahmed. See LICENSE for details of usage
+Copyright (C) 2022 Salih Ahmed. See LICENSE for details of usage
 .SH "SEE ALSO"
-razan_server(1)
+razan_server(8)

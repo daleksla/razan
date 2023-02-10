@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib/librazan_client_management.a  CMakeFiles/razan_client_management.dir/src/client_management.cc.o
+/usr/bin/ranlib lib/librazan_client_management.a

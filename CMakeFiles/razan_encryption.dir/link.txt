@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib/librazan_encryption.a  CMakeFiles/razan_encryption.dir/src/encryption.cc.o
+/usr/bin/ranlib lib/librazan_encryption.a

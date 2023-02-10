@@ -1,0 +1,2 @@
+/usr/bin/ar qc lib/librazan_client_chat.a  CMakeFiles/razan_client_chat.dir/src/client_chat.cc.o
+/usr/bin/ranlib lib/librazan_client_chat.a
